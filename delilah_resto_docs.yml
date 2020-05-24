@@ -1,0 +1,671 @@
+openapi: 3.0.1
+info:
+  title: Delilah Resto
+  description: Food restaurant API
+  contact:
+    email: karibel.barco@gmail.com
+  version: 1.0.0
+servers:
+  - description: Delilah Resto API
+    url: https://app.swaggerhub.com/apis/KaribelBT/delilah_resto_documentation/1.0.0
+  - url: https://localhost:3000/v1
+  - url: http://localhost:3000/v1
+tags:
+  - name: Users
+    description: Operations about user
+  - name: Products
+    description: Operations about products
+  - name: Orders
+    description: Operations about orders
+paths:
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Creates a new User
+      operationId: createUser
+      requestBody:
+        description: Required input to create user
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+        required: true
+      security: []
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        409:
+          $ref: "#/components/responses/Conflict"
+        default:
+          $ref: "#/components/responses/Default"
+    get:
+      tags:
+        - Users
+      summary: Gets a list of all the existing users (only user with admin attribute)
+      operationId: listUsers
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersList"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        default:
+          $ref: "#/components/responses/Default"
+  /users/:id:
+    get:
+      tags:
+        - Users
+      summary: Get user by id
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+    patch:
+      tags:
+        - Users
+      summary: Set admin atribute (only user with admin attribute)
+      operationId: setAdmin
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Set admin by true or false
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/Admin"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"    
+    put:
+      tags:
+        - Users
+      summary: Modify user data
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Users modifiable data
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/UserRequest"
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:        
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"    
+    delete:
+      tags:
+        - Users
+      summary: Disables user account (only user with admin attribute)
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: User Id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success, user disabled 
+        400:
+            $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+  /users/login:
+    post:
+      tags:
+        - Users
+      security: []
+      summary: Log in into the system
+      operationId: loginUser
+      requestBody:
+        description: Log in data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        400:
+          description: "#/components/responses/BadRequest"
+        default:
+          $ref: "#/components/responses/Default"
+  /products:
+    post:
+        tags:
+          - Products
+        summary: Create new product (only user with admin attribute)
+        operationId: createProduct
+        requestBody:
+          description: Required input to create product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductRequest"
+          required: true
+        responses:
+          201:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/ProductResponse"
+          400:
+            $ref: "#/components/responses/BadRequest"
+          401:
+            $ref: "#/components/responses/Unauthorized"
+          403:
+            $ref: "#/components/responses/Forbidden"
+          409:
+            $ref: "#/components/responses/Conflict"
+          default:
+            $ref: "#/components/responses/Default"
+    get:
+      tags:
+        - Products
+      summary: Gets a list of all the existing products 
+      operationId: listProducts
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsList"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        default:
+          $ref: "#/components/responses/Default"
+  /products/:id:
+    get:
+      tags:
+        - Products
+      summary: Get product by Id
+      parameters:
+        - name: id
+          in: path
+          description: Product Id
+          required: true
+          schema:
+            type: string
+      operationId: getProduct
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+    put:
+      tags:
+        - Products
+      summary: Modify product data (only user with admin attribute)
+      parameters:
+        - name: id
+          in: path
+          description: Product Id
+          required: true
+          schema:
+            type: string
+      operationId: updateProduct
+      requestBody:
+        description: Products modifiable data
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductRequest"
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:        
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"    
+    delete:
+      tags:
+        - Products
+      summary: Disables product (only user with admin attribute)
+      parameters:
+        - name: id
+          in: path
+          description: Product Id
+          required: true
+          schema:
+            type: string
+      operationId: deleteProduct
+      responses:
+        200:
+          description: Success, product disabled 
+        400:
+            $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+  /orders:
+    post:
+        tags:
+          - Orders
+        summary: Creates a new order
+        operationId: createOrder
+        requestBody:
+          description: Required input to create order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderRequest"
+          required: true
+        responses:
+          201:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/OrderResponse"
+          400:
+            $ref: "#/components/responses/BadRequest"
+          401:
+            $ref: "#/components/responses/Unauthorized"
+          default:
+            $ref: "#/components/responses/Default"
+    get:
+      tags:
+        - Orders
+      summary: Gets a list of all the existing orders (user can see its orders, admin can see all orders)
+      operationId: listOrders
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrdersList"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        default:
+          $ref: "#/components/responses/Default"
+  /orders/:id:
+    get:
+      tags:
+        - Orders
+      summary: Get order by Id 
+      parameters:
+        - name: id
+          in: path
+          description: Order Id
+          required: true
+          schema:
+            type: string
+      operationId: getOrder
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+    patch:
+      tags:
+        - Orders
+      summary: Set order status (only user with admin attribute)
+      operationId: updateStatus
+      parameters:
+        - name: id
+          in: path
+          description: Order Id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Order modifiable status
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: confirmado
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"    
+    delete:
+      tags:
+        - Orders
+      summary: Disables order (only user with admin attribute)
+      parameters:
+        - name: id
+          in: path
+          description: Order Id
+          required: true
+          schema:
+            type: string
+      operationId: deleteOrder
+      responses:
+        200:
+          description: Success, order disabled 
+        400:
+            $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+components:
+  schemas:
+    UserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: karibelbt
+        full_name:
+          type: string
+          example: Karibel Barco
+        email:
+          type: string
+          example: karibel.barco@gmail.com
+        phone:
+          type: integer
+          example: 5491144445555 
+        address:
+          type: string
+          example: calle esperanza 123  
+        password:
+          type: string
+          example: minumerodedocumento       
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        username:
+          type: string
+          example: karibelbt
+        full_name:
+          type: string
+          example: Karibel Barco
+        email:
+          type: string
+          example: karibel.barco@gmail.com
+        phone:
+          type: integer
+          example: 5491144445555 
+        address:
+          type: string
+          example: calle esperanza 123  
+        password:
+          type: string
+          example: minumerodedocumento
+        admin:
+            type: boolean
+            example: false
+        enable:
+            type: boolean
+            example: true    
+    UsersList:
+      type: array
+      items:
+        $ref: "#/components/schemas/UserResponse"
+    Admin:
+      type: object
+      properties:
+        admin:
+          type: boolean
+          example: true
+    Login:
+      type: object
+      properties:
+        username:
+            type: string
+            example: karibelbt
+        email:
+          type: string
+          example: karibel.barco@gmail.com
+        password:
+          type: string
+          example: minumerodedocumento
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    ProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Bagel de salmón
+        price:
+          type: number
+          example: 425.00
+        img_url:
+          type: string
+          example: https://i.pinimg.com/236x/82/1b/0f/821b0ff74c7ee26c4882e954a6f2686e--bagel-sandwich-breakfast-sandwiches.jpg
+        stock:
+          type: number
+          example: 100
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Bagel de salmón
+        price:
+          type: number
+          example: 425.00
+        img_url:
+          type: string
+          example: https://i.pinimg.com/236x/82/1b/0f/821b0ff74c7ee26c4882e954a6f2686e--bagel-sandwich-breakfast-sandwiches.jpg
+        stock:
+          type: number
+          example: 100
+        enable:
+            type: boolean
+            example: true 
+    ProductsList:
+      type: array
+      items:
+        $ref: "#/components/schemas/ProductResponse"
+    OrderRequest:
+      type: object
+      properties:
+        quantity:
+          type: number
+          example: 2
+        products:
+          $ref: "#/components/schemas/ProductResponse"
+        fop:
+          type: string
+          example: tarjeta de crédito
+        price:
+          type: number
+          example: 850.00
+        id_user:      
+          type: integer
+          format: int64
+          example: 1  
+    OrderResponse:
+      type: object
+      properties:
+        id:      
+          type: integer
+          format: int64
+          example: 1 
+        status:
+          type: string
+          example: nuevo
+        created_time:
+          type: string
+          format: date-time
+          example: "2020-05-24T12:48:05Z"
+        quantity:
+          type: number
+          example: 2
+        products:
+          $ref: "#/components/schemas/ProductResponse"
+        fop:
+          type: string
+          example: tarjeta de crédito
+        price:
+          type: number
+          example: 850.00
+        id_user:      
+          type: integer
+          format: int64
+          example: 1  
+    OrdersList:
+      type: array
+      items:
+        $ref: "#/components/schemas/OrderResponse"
+  responses:
+    BadRequest:
+      description: Bad Request, invalid parameters
+    NotFound:
+      description: Not Found
+    Unauthorized:
+      description: Unauthorized, you are not allowed here
+    Forbidden:
+      description: Forbidden, you are not an admin user
+    Conflict: 
+      description: Conflict, already exists
+    Default:
+      description: Internal Server Error
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
