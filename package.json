@@ -1,0 +1,24 @@
+{
+  "name": "delilah_resto",
+  "version": "1.0.0",
+  "description": "delilah resto server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KaribelBT/delilah_resto.git"
+  },
+  "author": "karibel barco taboada",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KaribelBT/delilah_resto/issues"
+  },
+  "homepage": "https://github.com/KaribelBT/delilah_resto#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4"
+  }
+}
