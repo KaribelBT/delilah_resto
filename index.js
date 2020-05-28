@@ -12,7 +12,7 @@ let myUser = new users.Users();
 app.use(bodyParser.json());
 
 //crea usuario
-app.post('/v1/users', async (req, res) => {
+app.post('/v1/users', myUser.userExist(sequelize), async (req, res) => {
     const { username, fullname, email, phone, address, password } = req.body
     let create = await myUser.create(sequelize, username, fullname, email, phone, address, password) 
     if(create.length>0){

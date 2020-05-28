@@ -1,34 +1,41 @@
 class Users {
-    create(sql, username, fullname, email, phone, address, password) {
+    create(sequilize, username, fullname, email, phone, address, password) {
         let resp = sql.query(
             `INSERT INTO users (username, fullname, email, phone, address, password, admin, enable) 
              VALUES (:username, :fullname, :email, :phone, :address, :password, :admin, :enable)`,
-            { replacements: {
-                username,
-                fullname,
-                email,
-                phone,
-                address,
-                password,
-                admin: false,
-                enable: true
+            {
+                replacements: {
+                    username,
+                    fullname,
+                    email,
+                    phone,
+                    address,
+                    password,
+                    admin: false,
+                    enable: true
                 }
-            })    
+            })
         return resp
     }
-
-    userExist(req, res, next) {
-        const { fullname, username, email } = req.body
-        let exist = sequilize.query(
-            `SELECT fullname, email FROM users WHERE fullname = ${fullname} AND email = ${username} AND email = ${email}`, {
-            type: sql.QueryTypes.SELECT,
-            raw: true
-        })
-        if (exist.length > 0) {
-            return res
-                .status(409)
-                .json({ error: `Ya existe el usuario ${fullname} asociado a este nombre ${username} y email ${email}` });
-        } else { next() };
+    userExist(sql) {
+        return function (req, res, next) {
+            const { username, email } = req.body
+            sql.query(
+                `SELECT username, email FROM users 
+                WHERE username = :username AND email = :email`, {
+                replacements: {
+                    username,
+                    email
+                },
+                type: sql.QueryTypes.SELECT
+            }).then(resp => {
+                if (resp.length > 0) {
+                    return res
+                        .status(409)
+                        .json({ error: `Ya existe un usuario asociado a ese email` });
+                } else { next() };
+            })
+        }
     }
     list(sql) {
         let resp = sql.query(
