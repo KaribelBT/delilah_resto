@@ -27,7 +27,7 @@ app.get('/v1/users', async (req, res) => {
     res.status(200).json(usersList)
 });
 
-//optiene usuario por id
+//obtiene usuario por id
 app.get('/v1/users/:id', async (req, res) => {
     let user = await myUser.get(sequelize,req.params.id)
     res.status(200).json(user)
