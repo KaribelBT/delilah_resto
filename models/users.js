@@ -66,6 +66,19 @@ class Users {
         });
         return resp
     };
+    delete(sql, id) {
+        let resp = sql.query(
+            `UPDATE users
+            SET enable = :enable
+            WHERE id = :id`, {
+            replacements: {
+                id,
+                enable: false
+            },
+            type: sql.QueryTypes.UPDATE
+        });
+        return resp
+    };
     login(sql, username, password) {
         let resp = sql.query(
             `SELECT * FROM users 

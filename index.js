@@ -38,7 +38,7 @@ app.get('/users', myUser.isAdmin(jwt), async (req, res) => {
 
 //obtiene usuario por id
 app.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
-    if (req.user.id == req.params.id || req.user.admin == true){
+    if (req.user.id == req.params.id || req.user.admin == true) {
         let user = await myUser.get(sequelize, req.params.id);
         user = user[0];
         res.status(200).json({
@@ -66,7 +66,7 @@ app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), asy
 //cambia datos de usuario por id
 app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
     const { username, fullname, email, phone, address, password } = req.body;
-    if (req.user.id == req.params.id || req.user.admin == true){
+    if (req.user.id == req.params.id || req.user.admin == true) {
         try {
             await myUser.update(sequelize, req.params.id, username, fullname, email, phone, address, password);
             let userUpdated = await myUser.get(sequelize, req.params.id);
@@ -88,6 +88,17 @@ app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
         res.status(401).json({ error: 'Unauthorized, you are not allowed here' })
     };
 });
+
+//borrado logico de usuario por id
+app.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
+    if (req.user.id == req.params.id || req.user.admin == true){
+        await myUser.delete(sequelize, req.params.id);
+        res.status(200).json({message: 'Success, user disabled'});
+    } else {
+        res.status(401).json({ error: 'Unauthorized, you are not allowed here' })
+    };
+});
+
 
 //loguea al usuario
 app.post('/users/login', async (req, res) => {
