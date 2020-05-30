@@ -41,6 +41,28 @@ class Middlewares {
             };
         };
     };
+    isAdmin(jwt){
+        return function (req, res, next) {
+            const authorizationHeader = req.headers.authorization;
+            if (!authorizationHeader) {
+                res
+                    .status(401)
+                    .json({ error: 'Unauthorized, you are not logged in' });
+                return;
+            }
+            const token = authorizationHeader.split(" ").pop();
+            const secret = require('../config/config.js');
+            const decoded = jwt.verify(token, secret.secret);
+            if (decoded.admin) {
+                req.user = decoded;
+                next();
+            } else {
+                res
+                    .status(403)
+                    .json({ error: 'Forbidden, you are not an admin user' });
+            };
+        }
+    }
 };
 
 module.exports = { Middlewares }

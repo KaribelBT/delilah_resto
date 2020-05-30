@@ -33,7 +33,7 @@ app.post('/users', myMid.userExist(sequelize), async (req, res) => {
 });
 
 //lista todos los usuarios
-app.get('/users', myMid.validToken(jwt), async (req, res) => {
+app.get('/users', myMid.isAdmin(jwt), async (req, res) => {
     let usersList = await myUser.list(sequelize);
     res.status(200).json(usersList);
 });
@@ -41,7 +41,17 @@ app.get('/users', myMid.validToken(jwt), async (req, res) => {
 //obtiene usuario por id
 app.get('/users/:id', myMid.validToken(jwt), async (req, res) => {
     let user = await myUser.get(sequelize, req.params.id);
-    res.status(200).json(user);
+    user = user[0];
+    res.status(200).json({
+        id: user.id,
+        username: user.username,
+        fullname: user.fullname,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        admin: user.admin,
+        enable: user.enable
+    });
 });
 
 //loguea al usuario
@@ -56,7 +66,9 @@ app.post('/users/login', async (req, res) => {
                 fullname: userLogged[0].fullname,
                 email: userLogged[0].email,
                 phone: userLogged[0].phone,
-                address: userLogged[0].address
+                address: userLogged[0].address,
+                admin: userLogged[0].admin,
+                enable: userLogged[0].enable
             }
             const token = jwt.sign(payload, secret.secret,{
                 expiresIn: 1440
