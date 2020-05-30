@@ -655,7 +655,7 @@ components:
     NotFound:
       description: Not Found
     Unauthorized:
-      description: Unauthorized, you are not logged in
+      description: Unauthorized, you are not allowed here
     Forbidden:
       description: Forbidden, you are not an admin user
     Conflict: 
