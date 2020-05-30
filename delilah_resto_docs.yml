@@ -655,11 +655,11 @@ components:
     NotFound:
       description: Not Found
     Unauthorized:
-      description: Unauthorized, you are not allowed here
+      description: Unauthorized, you are not logged in
     Forbidden:
       description: Forbidden, you are not an admin user
     Conflict: 
-      description: Conflict, already exists
+      description: Conflict
     Default:
       description: Internal Server Error
   securitySchemes:

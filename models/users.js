@@ -14,16 +14,16 @@ class Users {
                     admin: false,
                     enable: true
                 }
-            })
+            });
         return resp
-    }
+    };
     list(sql) {
         let resp = sql.query(
             'SELECT * FROM users', {
             type: sql.QueryTypes.SELECT,
         })
-        return resp
-    }
+        return resp;
+    };
     get(sql, id) {
         let resp = sql.query(
             `SELECT * FROM users 
@@ -32,28 +32,8 @@ class Users {
                 id
             },
             type: sql.QueryTypes.SELECT,
-        })
-        return resp
-    }
-    userExist(sql) {
-        return function (req, res, next) {
-            const { username, email } = req.body
-            sql.query(
-                `SELECT username, email FROM users 
-                WHERE username = :username AND email = :email`, {
-                replacements: {
-                    username,
-                    email
-                },
-                type: sql.QueryTypes.SELECT
-            }).then(resp => {
-                if (resp.length > 0) {
-                    return res
-                        .status(409)
-                        .json({ error: `Ya existe un usuario asociado a ese email` });
-                } else { next() };
-            })
-        }
+        });
+        return resp;
     }
     login(sql, username, password){
         let resp = sql.query(
@@ -64,8 +44,8 @@ class Users {
                 password
             },
             type: sql.QueryTypes.SELECT,
-        })
-        return resp   
-    }
-}
+        });
+        return resp;
+    };
+};
 module.exports = { Users }
