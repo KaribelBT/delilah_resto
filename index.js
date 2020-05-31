@@ -8,16 +8,22 @@ const Sequelize = require('sequelize');
 const sequelize = new Sequelize('mysql://root@127.0.0.1:3306/delilah_resto')
 const users = require('./models/users.js');
 let myUser = new users.Users();
-
+const products = require('./models/products.js');
+let myProduct = new products.Products();
 app.use(bodyParser.json());
 
+//inicia servidor
+app.listen(port, () => {
+    console.log('Servidor Iniciado');
+});
+/***USERS***/
 //crea usuario
 app.post('/users', myUser.userExist(sequelize), async (req, res) => {
     const { username, fullname, email, phone, address, password } = req.body;
     let create = await myUser.create(sequelize, username, fullname, email, phone, address, password);
     if (create.length > 0) {
         let user = await myUser.get(sequelize, create[0]);
-        res.status(200).json({
+        res.status(201).json({
             id: user.id,
             username: user.username,
             fullname: user.fullname,
@@ -29,13 +35,11 @@ app.post('/users', myUser.userExist(sequelize), async (req, res) => {
         res.status(400).json({ error: 'Bad Request, invalid or missing input' });
     }
 });
-
 //lista todos los usuarios
 app.get('/users', myUser.isAdmin(jwt), async (req, res) => {
     let usersList = await myUser.list(sequelize);
     res.status(200).json(usersList);
 });
-
 //obtiene usuario por id
 app.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
     if (req.user.id == req.params.id || req.user.admin == true) {
@@ -55,14 +59,12 @@ app.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
         res.status(401).json({ error: 'Unauthorized, you are not allowed here' })
     };
 });
-
 //cambiar propiedad Admin por id de usuario
 app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), async (req, res) => {
     await myUser.setAdmin(sequelize, req.params.id, req.body.admin);
     let userUpdated = await myUser.get(sequelize, req.params.id);
     res.status(200).json({ userUpdated });
 });
-
 //cambia datos de usuario por id
 app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
     const { username, fullname, email, phone, address, password } = req.body;
@@ -88,18 +90,15 @@ app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
         res.status(401).json({ error: 'Unauthorized, you are not allowed here' })
     };
 });
-
 //borrado logico de usuario por id
 app.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
-    if (req.user.id == req.params.id || req.user.admin == true){
+    if (req.user.id == req.params.id || req.user.admin == true) {
         await myUser.delete(sequelize, req.params.id);
-        res.status(200).json({message: 'Success, user disabled'});
+        res.status(200).json({ message: 'Success, user disabled' });
     } else {
         res.status(401).json({ error: 'Unauthorized, you are not allowed here' })
     };
 });
-
-
 //loguea al usuario
 app.post('/users/login', async (req, res) => {
     const { username, password } = req.body;
@@ -122,14 +121,55 @@ app.post('/users/login', async (req, res) => {
             res.status(200).json({ token });
             return;
         } else {
-            res.statrus(409).json({ error: `Conflict, user disabled` })
+            res.status(409).json({ error: `Conflict, user disabled` })
         }
     } else {
         res.status(400).json({ error: 'Bad Request, invalid or missing input' })
     };
 });
-
-//inicia servidor
-app.listen(port, () => {
-    console.log('Servidor Iniciado');
+/***PRODUCTS***/
+//crea producto
+app.post('/products', myUser.isAdmin(jwt), myProduct.productExist(sequelize), async (req, res) => {
+    const { name, price, img_url, stock } = req.body;
+    let create = await myProduct.create(sequelize, name, price, img_url, stock);
+    if (create.length > 0) {
+        let user = await myProduct.get(sequelize, create[0]);
+        res.status(201).json({ user });
+    } else {
+        res.status(400).json({ error: 'Bad Request, invalid or missing input' });
+    }
+});
+//lista todos los productos
+app.get('/products', myUser.validToken(jwt), async (req, res) => {
+    let productsList = await myProduct.list(sequelize);
+    if (req.user.admin == true) {
+        res.status(200).json(productsList);
+    } else {
+        let productsFiltered = productsList.map(resp => {
+            return {
+                id: resp.id,
+                name: resp.name,
+                price: resp.price,
+                img_url: resp.img_url
+            }
+        })
+        res.status(200).json(productsFiltered);
+    }
+});
+//obtiene product por id
+app.get('/products/:id', myUser.validToken(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
+    let product = await myProduct.get(sequelize, req.params.id);
+    if (product.length > 0) {
+        product = product[0];
+        if (req.user.admin == true) {
+            res.status(200).json({ product });
+        } else {
+            res.status(200).json({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                img_url: product.img_url
+            });
+        }
+    }
 });

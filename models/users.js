@@ -91,12 +91,13 @@ class Users {
         });
         return resp;
     };
+    //middlewares
     userExist(sql) {
         return function (req, res, next) {
             const { username, email } = req.body
             sql.query(
                 `SELECT username, email FROM users 
-                WHERE username = :username AND email = :email`, {
+                WHERE username = :username OR email = :email`, {
                 replacements: {
                     username,
                     email
@@ -106,7 +107,7 @@ class Users {
                 if (resp.length > 0) {
                     return res
                         .status(409)
-                        .json({ error: `Conflict, username and email already exist` });
+                        .json({ error: `Conflict, username or email already exist` });
                 } else { next() };
             });
         };
