@@ -1,14 +1,13 @@
 class Products {
-    create(sql, name, price, img_url, stock) {
+    create(sql, name, price, img_url) {
         let resp = sql.query(
-            `INSERT INTO products (name, price, img_url, stock, enable) 
-             VALUES (:name, :price, :img_url, :stock, :enable)`,
+            `INSERT INTO products (name, price, img_url, enable) 
+             VALUES (:name, :price, :img_url, :enable)`,
             {
                 replacements: {
                     name,
                     price,
                     img_url,
-                    stock,
                     enable: true
                 }
             });
@@ -31,6 +30,34 @@ class Products {
             type: sql.QueryTypes.SELECT,
         });
         return resp;
+    };
+    update(sql, id, name, price, img_url) {
+        let resp = sql.query(
+            `UPDATE products
+            SET name = :name, price = :price, img_url = :img_url
+            WHERE id = :id`, {
+            replacements: {
+                id,
+                name,
+                price,
+                img_url
+            },
+            type: sql.QueryTypes.UPDATE
+        });
+        return resp
+    };
+    delete(sql, id) {
+        let resp = sql.query(
+            `UPDATE products
+            SET enable = :enable
+            WHERE id = :id`, {
+            replacements: {
+                id,
+                enable: false
+            },
+            type: sql.QueryTypes.UPDATE
+        });
+        return resp
     };
     //middlewares
     productExist(sql) {

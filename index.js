@@ -63,6 +63,7 @@ app.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
 app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), async (req, res) => {
     await myUser.setAdmin(sequelize, req.params.id, req.body.admin);
     let userUpdated = await myUser.get(sequelize, req.params.id);
+    userUpdated = userUpdated[0];
     res.status(200).json({ userUpdated });
 });
 //cambia datos de usuario por id
@@ -93,8 +94,13 @@ app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
 //borrado logico de usuario por id
 app.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
     if (req.user.id == req.params.id || req.user.admin == true) {
-        await myUser.delete(sequelize, req.params.id);
-        res.status(200).json({ message: 'Success, user disabled' });
+        try {
+            await myUser.delete(sequelize, req.params.id);
+            res.status(200).json({ message: 'Success, user disabled' });
+        }
+        catch{
+            res.status(400).json({ error: 'Bad Request, invalid or missing input' })
+        }
     } else {
         res.status(401).json({ error: 'Unauthorized, you are not allowed here' })
     };
@@ -130,8 +136,8 @@ app.post('/users/login', async (req, res) => {
 /***PRODUCTS***/
 //crea producto
 app.post('/products', myUser.isAdmin(jwt), myProduct.productExist(sequelize), async (req, res) => {
-    const { name, price, img_url, stock } = req.body;
-    let create = await myProduct.create(sequelize, name, price, img_url, stock);
+    const { name, price, img_url } = req.body;
+    let create = await myProduct.create(sequelize, name, price, img_url);
     if (create.length > 0) {
         let user = await myProduct.get(sequelize, create[0]);
         res.status(201).json({ user });
@@ -156,7 +162,7 @@ app.get('/products', myUser.validToken(jwt), async (req, res) => {
         res.status(200).json(productsFiltered);
     }
 });
-//obtiene product por id
+//obtiene producto por id
 app.get('/products/:id', myUser.validToken(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
     let product = await myProduct.get(sequelize, req.params.id);
     if (product.length > 0) {
@@ -171,5 +177,27 @@ app.get('/products/:id', myUser.validToken(jwt), myProduct.productNotFound(seque
                 img_url: product.img_url
             });
         }
+    }
+});
+//cambia datos de producto por id
+app.put('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
+    const { name, price, img_url } = req.body;
+    try {
+        await myProduct.update(sequelize, req.params.id, name, price, img_url);
+        let productUpdated = await myProduct.get(sequelize, req.params.id);
+        productUpdated = productUpdated[0];
+        res.status(200).json({ productUpdated });
+    } catch {
+        res.status(400).json({ error: 'Bad Request, invalid or missing input' })
+    };
+});
+//borrado logico de producto por id
+app.delete('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
+    try {
+        await myProduct.delete(sequelize, req.params.id);
+        res.status(200).json({ message: 'Success, user disabled' });
+    }
+    catch{
+        res.status(400).json({ error: 'Bad Request, invalid or missing input' })
     }
 });
