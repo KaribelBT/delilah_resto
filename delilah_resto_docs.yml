@@ -204,7 +204,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/Token"
         400:
-          description: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/BadRequest"
+        409:
+          $ref: "#/components/responses/Conflict"
         default:
           $ref: "#/components/responses/Default"
   /products:

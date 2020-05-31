@@ -61,10 +61,20 @@ app.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
 });
 //cambiar propiedad Admin por id de usuario
 app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), async (req, res) => {
-    await myUser.setAdmin(sequelize, req.params.id, req.body.admin);
-    let userUpdated = await myUser.get(sequelize, req.params.id);
-    userUpdated = userUpdated[0];
-    res.status(200).json({ userUpdated });
+    if(req.params.id){
+        try{
+            await myUser.setAdmin(sequelize, req.params.id, req.body.admin);
+            let userUpdated = await myUser.get(sequelize, req.params.id);
+            userUpdated = userUpdated[0];
+            res.status(200).json({ userUpdated });
+        }
+        catch{
+            res.status(400).json({ error: 'Bad Request' })
+        }
+    }else{
+        res.status(401).json({ error: 'Unauthorized, you are not allowed here' })
+    }
+    
 });
 //cambia datos de usuario por id
 app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
@@ -99,7 +109,7 @@ app.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize),
             res.status(200).json({ message: 'Success, user disabled' });
         }
         catch{
-            res.status(400).json({ error: 'Bad Request, invalid or missing input' })
+            res.status(400).json({ error: 'Bad Request' })
         }
     } else {
         res.status(401).json({ error: 'Unauthorized, you are not allowed here' })
@@ -201,3 +211,4 @@ app.delete('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(seque
         res.status(400).json({ error: 'Bad Request, invalid or missing input' })
     }
 });
+/***ORDERS***/
