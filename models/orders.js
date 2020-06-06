@@ -79,6 +79,19 @@ class Orders {
             return resp;
         }
     }
+    setStatus(sql, id, id_status) {
+        let resp = sql.query(
+            `UPDATE orders
+            SET id_status = :id_status
+            WHERE id = :id`, {
+            replacements: {
+                id,
+                id_status
+            },
+            type: sql.QueryTypes.UPDATE
+        });
+        return resp
+    };
     delete(sql, id) {
         let resp = sql.query(
             `UPDATE orders
@@ -86,7 +99,7 @@ class Orders {
             WHERE id = :id`, {
             replacements: {
                 id,
-                id_status:5
+                id_status:6
             },
             type: sql.QueryTypes.UPDATE
         });

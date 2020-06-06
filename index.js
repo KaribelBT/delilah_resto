@@ -233,7 +233,21 @@ app.get('/orders/:id', myUser.validToken(jwt), myOrder.orderNotFound(sequelize),
     res.status(200).json(order);   
 });
 //cambia estado del pedido
-
+app.patch('/orders/:id', myUser.isAdmin(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
+    try {
+        if(req.body.status<=5 && req.body.status!=0){
+            await myOrder.setStatus(sequelize, req.params.id,req.body.status);
+            let order = await myOrder.get(sequelize,req.user,req.params.id);
+            order = order[0]
+            res.status(200).json(order)
+        }else{
+            res.status(409).json({ error: 'Conflict, invalid status' });
+        }
+    }
+    catch{
+        res.status(400).json({ error: 'Bad Request, invalid or missing input' })
+    }  
+});
 //cancela pedido, borrado logico 
 app.delete('/orders/:id', myUser.isAdmin(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
     try {
