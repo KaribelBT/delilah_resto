@@ -15,7 +15,11 @@ class Products {
     };
     list(sql) {
         let resp = sql.query(
-            'SELECT * FROM products', {
+            `SELECT * FROM products 
+            WHERE enable = :enable`, {
+            replacements: {
+                enable: 1
+            },
             type: sql.QueryTypes.SELECT,
         })
         return resp;

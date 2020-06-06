@@ -61,8 +61,8 @@ app.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
 });
 //cambiar propiedad Admin por id de usuario
 app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), myUser.userDisabled(sequelize), async (req, res) => {
-    if(req.params.id){
-        try{
+    if (req.params.id) {
+        try {
             await myUser.setAdmin(sequelize, req.params.id, req.body.admin);
             let userUpdated = await myUser.get(sequelize, req.params.id);
             userUpdated = userUpdated[0];
@@ -71,10 +71,10 @@ app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), myU
         catch{
             res.status(400).json({ error: 'Bad Request' })
         }
-    }else{
+    } else {
         res.status(401).json({ error: 'Unauthorized, you are not allowed here' })
     }
-    
+
 });
 //cambia datos de usuario por id
 app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
@@ -180,12 +180,17 @@ app.get('/products/:id', myUser.validToken(jwt), myProduct.productNotFound(seque
         if (req.user.admin == true) {
             res.status(200).json({ product });
         } else {
-            res.status(200).json({
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                img_url: product.img_url
-            });
+            if (product.enable) {
+                res.status(200).json({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    img_url: product.img_url
+                });
+            } else {
+                res.status(409)
+                    .json({ error: `Conflict, product disabled` })
+            }
         }
     }
 });
@@ -204,8 +209,9 @@ app.put('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequeliz
 //borrado logico de producto por id
 app.delete('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
     try {
-        await myProduct.delete(sequelize, req.params.id);
-        res.status(200).json({ message: 'Success, user disabled' });
+        let algo = await myProduct.delete(sequelize, req.params.id);
+        console.log(algo)
+        res.status(200).json({ message: 'Success, product disabled' });
     }
     catch{
         res.status(400).json({ error: 'Bad Request, invalid or missing input' })
