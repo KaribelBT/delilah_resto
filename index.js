@@ -213,8 +213,7 @@ app.put('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequeliz
 //borrado logico de producto por id
 app.delete('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
     try {
-        let algo = await myProduct.delete(sequelize, req.params.id);
-        console.log(algo)
+        await myProduct.delete(sequelize, req.params.id);
         res.status(200).json({ message: 'Success, product disabled' });
     }
     catch{
@@ -230,7 +229,18 @@ app.get('/orders', myUser.validToken(jwt), async (req, res) => {
 //obtiene pedido por id
 app.get('/orders/:id', myUser.validToken(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
     let order = await myOrder.get(sequelize,req.user,req.params.id);
-    console.log(order)
     order = order[0]
     res.status(200).json(order);   
+});
+//cambia estado del pedido
+
+//cancela pedido, borrado logico 
+app.delete('/orders/:id', myUser.isAdmin(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
+    try {
+        await myOrder.delete(sequelize, req.params.id);
+        res.status(200).json({ message: 'Success, order cancelled' });
+    }
+    catch{
+        res.status(400).json({ error: 'Bad Request, invalid or missing input' })
+    }  
 });

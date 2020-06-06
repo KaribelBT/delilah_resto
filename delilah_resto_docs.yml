@@ -453,7 +453,7 @@ paths:
     delete:
       tags:
         - Orders
-      summary: Disables order (only user with admin attribute)
+      summary: Cancels an order (only user with admin attribute)
       parameters:
         - name: id
           in: path

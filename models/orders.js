@@ -79,6 +79,19 @@ class Orders {
             return resp;
         }
     }
+    delete(sql, id) {
+        let resp = sql.query(
+            `UPDATE orders
+            SET id_status = :id_status
+            WHERE id = :id`, {
+            replacements: {
+                id,
+                id_status:5
+            },
+            type: sql.QueryTypes.UPDATE
+        });
+        return resp
+    };
     //middleware
     orderNotFound(sql) {
         let self = this
