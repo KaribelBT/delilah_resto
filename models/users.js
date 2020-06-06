@@ -122,6 +122,39 @@ class Users {
                 })
         };
     };
+    userDisabled(sql) {
+        let self = this
+        return function (req, res, next) {
+            if (req.params.id) {
+                self.get(sql, req.params.id)
+                    .then(resp => {
+                        if (resp[0].enable == true) {
+                            next()
+                        } else {
+                            res.status(409)
+                                .json({ error: `Conflict, user disabled` })
+                        }
+                    })
+            } else {
+                let username = req.body.username;
+                sql.query(
+                    `SELECT * FROM users 
+                    WHERE username = :username OR email = :username`, {
+                    replacements: {
+                        username,
+                    },
+                    type: sql.QueryTypes.SELECT
+                }).then(resp => {
+                    if (resp[0].enable == true) {
+                        next()
+                    } else {
+                        res.status(409)
+                            .json({ error: `Conflict, user disabled` })
+                    }
+                })
+            };
+        };
+    };
     validToken(jwt) {
         return function (req, res, next) {
             const authorizationHeader = req.headers.authorization;

@@ -60,7 +60,7 @@ app.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
     };
 });
 //cambiar propiedad Admin por id de usuario
-app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), async (req, res) => {
+app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), myUser.userDisabled(sequelize), async (req, res) => {
     if(req.params.id){
         try{
             await myUser.setAdmin(sequelize, req.params.id, req.body.admin);
@@ -102,7 +102,7 @@ app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
     };
 });
 //borrado logico de usuario por id
-app.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
+app.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), myUser.userDisabled(sequelize), async (req, res) => {
     if (req.user.id == req.params.id || req.user.admin == true) {
         try {
             await myUser.delete(sequelize, req.params.id);
@@ -116,7 +116,7 @@ app.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize),
     };
 });
 //loguea al usuario
-app.post('/users/login', async (req, res) => {
+app.post('/users/login', myUser.userDisabled(sequelize), async (req, res) => {
     const { username, password } = req.body;
     let userLogged = await myUser.login(sequelize, username, password);
     if (userLogged.length > 0) {
