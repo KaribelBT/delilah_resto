@@ -10,6 +10,9 @@ const users = require('./models/users.js');
 let myUser = new users.Users();
 const products = require('./models/products.js');
 let myProduct = new products.Products();
+const orders = require('./models/orders.js');
+let myOrder = new orders.Orders();
+
 app.use(bodyParser.json());
 
 //inicia servidor
@@ -23,6 +26,7 @@ app.post('/users', myUser.userExist(sequelize), async (req, res) => {
     let create = await myUser.create(sequelize, username, fullname, email, phone, address, password);
     if (create.length > 0) {
         let user = await myUser.get(sequelize, create[0]);
+        user = user[0]
         res.status(201).json({
             id: user.id,
             username: user.username,
@@ -218,3 +222,15 @@ app.delete('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(seque
     }
 });
 /***ORDERS***/
+//lista todos los pedidos
+app.get('/orders', myUser.validToken(jwt), async (req, res) => {
+    let ordersList = await myOrder.list(sequelize,req.user);
+    res.status(200).json(ordersList);   
+});
+//obtiene pedido por id
+app.get('/orders/:id', myUser.validToken(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
+    let order = await myOrder.get(sequelize,req.user,req.params.id);
+    console.log(order)
+    order = order[0]
+    res.status(200).json(order);   
+});
