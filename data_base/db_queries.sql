@@ -39,7 +39,7 @@ DROP TABLE IF EXISTS  orders ;
 CREATE TABLE  orders  (
    id   INT PRIMARY KEY  NOT NULL AUTO_INCREMENT,
    id_status   INT  NOT NULL,
-   create_time  datetime NOT NULL,
+   create_time  datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
    quantity   INT  NOT NULL,
    id_fop   INT  NOT NULL,
    price  FLOAT NOT NULL,

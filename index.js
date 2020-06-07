@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 5000;
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const secret = require('./config/config.js');
@@ -221,6 +221,21 @@ app.delete('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(seque
     }
 });
 /***ORDERS***/
+//crea el pedido
+app.post('/orders',myUser.validToken(jwt), async (req, res) => {
+    //await myOrder.create(sequelize,req.body);
+    
+    let productsToOrder = req.body.product.map(async (p)=>await myProduct.get(sequelize, p.id))
+    let prodArr = await Promise.all(productsToOrder)
+    let priceTotal = 0
+    let quantity = 0
+    prodArr.map((pro,key) => {
+        priceTotal += req.body.product[key].quantity * pro[0].price
+        quantity += req.body.product[key].quantity
+    })
+    await myOrder.create(sequelize,req.body,priceTotal,quantity,req.user.id)
+    res.status(200).json({ok:quantity});    
+});
 //lista todos los pedidos
 app.get('/orders', myUser.validToken(jwt), async (req, res) => {
     let ordersList = await myOrder.list(sequelize,req.user);

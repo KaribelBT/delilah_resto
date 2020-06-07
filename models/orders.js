@@ -1,4 +1,23 @@
 class Orders {
+    create(sql,body,priceTotal,quantity,id_user){
+        console.log(body.id_fop)
+        console.log(priceTotal)
+        console.log(quantity)
+        let resp = sql.query(
+            `INSERT INTO orders (id_status,  quantity, id_fop, price, id_user) 
+             VALUES (:id_status,  :quantity, :id_fop, :price, :id_user)`,
+            {
+                replacements: {
+                    id_status:1,
+                    quantity,
+                    id_fop:body.id_fop,
+                    price:priceTotal,
+                    id_user
+                }
+            });
+        return resp
+
+    }
     list(sql, user) {
         if (user.admin == 1) {
             let resp = sql.query(
