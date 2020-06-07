@@ -616,6 +616,7 @@ components:
                 example: 2
         fop:
           type: integer
+          description: 1 = EFECTIVO, 2 = DEBITO, 3 = CREDITO
           example: 1
     OrderResponse:
       type: array
