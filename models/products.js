@@ -1,14 +1,15 @@
 class Products {
-    create(sql, name, price, img_url) {
+    create(sql, name, price, img_url, stock) {
         let resp = sql.query(
-            `INSERT INTO products (name, price, img_url, enable) 
-             VALUES (:name, :price, :img_url, :enable)`,
+            `INSERT INTO products (name, price, img_url, enable, stock) 
+             VALUES (:name, :price, :img_url, :enable, :stock)`,
             {
                 replacements: {
                     name,
                     price,
                     img_url,
-                    enable: true
+                    enable: true,
+                    stock
                 }
             });
         return resp
@@ -35,16 +36,17 @@ class Products {
         });
         return resp;
     };
-    update(sql, id, name, price, img_url) {
+    update(sql, id, name, price, img_url, stock) {
         let resp = sql.query(
             `UPDATE products
-            SET name = :name, price = :price, img_url = :img_url
+            SET name = :name, price = :price, img_url = :img_url, stock = :stock
             WHERE id = :id`, {
             replacements: {
                 id,
                 name,
                 price,
-                img_url
+                img_url,
+                stock
             },
             type: sql.QueryTypes.UPDATE
         });

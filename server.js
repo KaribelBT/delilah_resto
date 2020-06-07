@@ -1,6 +1,6 @@
 const express = require('express');
-const app = express();
-const port = 5000;
+const server = express();
+const port = 3000;
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const secret = require('./config/config.js');
@@ -13,15 +13,15 @@ let myProduct = new products.Products();
 const orders = require('./models/orders.js');
 let myOrder = new orders.Orders();
 
-app.use(bodyParser.json());
+server.use(bodyParser.json());
 
 //inicia servidor
-app.listen(port, () => {
+server.listen(port, () => {
     console.log('Servidor Iniciado');
 });
 /***USERS***/
 //crea usuario
-app.post('/users', myUser.userExist(sequelize), async (req, res) => {
+server.post('/users', myUser.userExist(sequelize), async (req, res) => {
     const { username, fullname, email, phone, address, password } = req.body;
     let create = await myUser.create(sequelize, username, fullname, email, phone, address, password);
     if (create.length > 0) {
@@ -40,12 +40,12 @@ app.post('/users', myUser.userExist(sequelize), async (req, res) => {
     }
 });
 //lista todos los usuarios
-app.get('/users', myUser.isAdmin(jwt), async (req, res) => {
+server.get('/users', myUser.isAdmin(jwt), async (req, res) => {
     let usersList = await myUser.list(sequelize);
     res.status(200).json(usersList);
 });
 //obtiene usuario por id
-app.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
+server.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
     if (req.user.id == req.params.id || req.user.admin == true) {
         let user = await myUser.get(sequelize, req.params.id);
         user = user[0];
@@ -64,7 +64,7 @@ app.get('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
     };
 });
 //cambiar propiedad Admin por id de usuario
-app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), myUser.userDisabled(sequelize), async (req, res) => {
+server.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), myUser.userDisabled(sequelize), async (req, res) => {
     if (req.params.id) {
         try {
             await myUser.setAdmin(sequelize, req.params.id, req.body.admin);
@@ -81,7 +81,7 @@ app.patch('/users/:id', myUser.isAdmin(jwt), myUser.userNotFound(sequelize), myU
 
 });
 //cambia datos de usuario por id
-app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
+server.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), async (req, res) => {
     const { username, fullname, email, phone, address, password } = req.body;
     if (req.user.id == req.params.id || req.user.admin == true) {
         try {
@@ -106,7 +106,7 @@ app.put('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), as
     };
 });
 //borrado logico de usuario por id
-app.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), myUser.userDisabled(sequelize), async (req, res) => {
+server.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize), myUser.userDisabled(sequelize), async (req, res) => {
     if (req.user.id == req.params.id || req.user.admin == true) {
         try {
             await myUser.delete(sequelize, req.params.id);
@@ -120,7 +120,7 @@ app.delete('/users/:id', myUser.validToken(jwt), myUser.userNotFound(sequelize),
     };
 });
 //loguea al usuario
-app.post('/users/login', myUser.userDisabled(sequelize), async (req, res) => {
+server.post('/users/login', myUser.userDisabled(sequelize), async (req, res) => {
     const { username, password } = req.body;
     let userLogged = await myUser.login(sequelize, username, password);
     if (userLogged.length > 0) {
@@ -149,9 +149,9 @@ app.post('/users/login', myUser.userDisabled(sequelize), async (req, res) => {
 });
 /***PRODUCTS***/
 //crea producto
-app.post('/products', myUser.isAdmin(jwt), myProduct.productExist(sequelize), async (req, res) => {
-    const { name, price, img_url } = req.body;
-    let create = await myProduct.create(sequelize, name, price, img_url);
+server.post('/products', myUser.isAdmin(jwt), myProduct.productExist(sequelize), async (req, res) => {
+    const { name, price, img_url, stock } = req.body;
+    let create = await myProduct.create(sequelize, name, price, img_url, stock);
     if (create.length > 0) {
         let user = await myProduct.get(sequelize, create[0]);
         res.status(201).json({ user });
@@ -160,7 +160,7 @@ app.post('/products', myUser.isAdmin(jwt), myProduct.productExist(sequelize), as
     }
 });
 //lista todos los productos
-app.get('/products', myUser.validToken(jwt), async (req, res) => {
+server.get('/products', myUser.validToken(jwt), async (req, res) => {
     let productsList = await myProduct.list(sequelize);
     if (req.user.admin == true) {
         res.status(200).json(productsList);
@@ -177,7 +177,7 @@ app.get('/products', myUser.validToken(jwt), async (req, res) => {
     }
 });
 //obtiene producto por id
-app.get('/products/:id', myUser.validToken(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
+server.get('/products/:id', myUser.validToken(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
     let product = await myProduct.get(sequelize, req.params.id);
     if (product.length > 0) {
         product = product[0];
@@ -199,10 +199,10 @@ app.get('/products/:id', myUser.validToken(jwt), myProduct.productNotFound(seque
     }
 });
 //cambia datos de producto por id
-app.put('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
-    const { name, price, img_url } = req.body;
+server.put('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
+    const { name, price, img_url, stock } = req.body;
     try {
-        await myProduct.update(sequelize, req.params.id, name, price, img_url);
+        await myProduct.update(sequelize, req.params.id, name, price, img_url, stock);
         let productUpdated = await myProduct.get(sequelize, req.params.id);
         productUpdated = productUpdated[0];
         res.status(200).json({ productUpdated });
@@ -211,7 +211,7 @@ app.put('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequeliz
     };
 });
 //borrado logico de producto por id
-app.delete('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
+server.delete('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(sequelize), async (req, res) => {
     try {
         await myProduct.delete(sequelize, req.params.id);
         res.status(200).json({ message: 'Success, product disabled' });
@@ -222,54 +222,63 @@ app.delete('/products/:id', myUser.isAdmin(jwt), myProduct.productNotFound(seque
 });
 /***ORDERS***/
 //crea el pedido
-app.post('/orders',myUser.validToken(jwt), async (req, res) => {
-    //await myOrder.create(sequelize,req.body);
-    
-    let productsToOrder = req.body.product.map(async (p)=>await myProduct.get(sequelize, p.id))
-    let prodArr = await Promise.all(productsToOrder)
-    let priceTotal = 0
-    let quantity = 0
-    prodArr.map((pro,key) => {
-        priceTotal += req.body.product[key].quantity * pro[0].price
-        quantity += req.body.product[key].quantity
-    })
-    await myOrder.create(sequelize,req.body,priceTotal,quantity,req.user.id)
-    res.status(200).json({ok:quantity});    
+server.post('/orders', myUser.validToken(jwt), async (req, res) => {
+    try {
+        if (req.body.id_fop <= 3 && req.body.id_fop != 0) {
+            let productsToOrder = req.body.product.map(async (p) => await myProduct.get(sequelize, p.id))
+            let prodArr = await Promise.all(productsToOrder)
+            let priceTotal = 0
+            let quantity = 0
+            prodArr.map((pro, key) => {
+                priceTotal += req.body.product[key].quantity * pro[0].price
+                quantity += req.body.product[key].quantity
+            })
+            let orderId = await myOrder.create(sequelize, req.body, priceTotal, quantity, req.user.id)
+            let orderProm = req.body.product.map(async (p) => await myOrder.insertProductOrder(sequelize, orderId[0], p.id))
+            await Promise.all(orderProm)
+            let order = await myOrder.get(sequelize, req.user, orderId[0]);
+            res.status(200).json(order);
+        }else {
+            res.status(409).json({ error: 'Conflict, invalid form of payment' });
+        }
+    } catch{
+        res.status(400).json({ error: 'Bad Request, invalid or missing input' })
+    }
+
 });
 //lista todos los pedidos
-app.get('/orders', myUser.validToken(jwt), async (req, res) => {
-    let ordersList = await myOrder.list(sequelize,req.user);
-    res.status(200).json(ordersList);   
+server.get('/orders', myUser.validToken(jwt), async (req, res) => {
+    let ordersList = await myOrder.list(sequelize, req.user);
+    res.status(200).json(ordersList);
 });
 //obtiene pedido por id
-app.get('/orders/:id', myUser.validToken(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
-    let order = await myOrder.get(sequelize,req.user,req.params.id);
-    order = order[0]
-    res.status(200).json(order);   
+server.get('/orders/:id', myUser.validToken(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
+    let order = await myOrder.get(sequelize, req.user, req.params.id);
+    res.status(200).json(order);
 });
 //cambia estado del pedido
-app.patch('/orders/:id', myUser.isAdmin(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
+server.patch('/orders/:id', myUser.isAdmin(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
     try {
-        if(req.body.status<=5 && req.body.status!=0){
-            await myOrder.setStatus(sequelize, req.params.id,req.body.status);
-            let order = await myOrder.get(sequelize,req.user,req.params.id);
+        if (req.body.status <= 5 && req.body.status != 0) {
+            await myOrder.setStatus(sequelize, req.params.id, req.body.status);
+            let order = await myOrder.get(sequelize, req.user, req.params.id);
             order = order[0]
             res.status(200).json(order)
-        }else{
+        } else {
             res.status(409).json({ error: 'Conflict, invalid status' });
         }
     }
     catch{
         res.status(400).json({ error: 'Bad Request, invalid or missing input' })
-    }  
+    }
 });
 //cancela pedido, borrado logico 
-app.delete('/orders/:id', myUser.isAdmin(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
+server.delete('/orders/:id', myUser.isAdmin(jwt), myOrder.orderNotFound(sequelize), async (req, res) => {
     try {
         await myOrder.delete(sequelize, req.params.id);
         res.status(200).json({ message: 'Success, order cancelled' });
     }
     catch{
         res.status(400).json({ error: 'Bad Request, invalid or missing input' })
-    }  
+    }
 });

@@ -16,7 +16,7 @@ CREATE TABLE  status  (
    name   VARCHAR(60) NOT NULL
 );
 
-INSERT  INTO  status  VALUES (1,'NUEVO'),(2,'CONFIRMADO'),(3,'PREPARANDO'),(4,'ENVIANDO'),(5,'CANCELADO'),(6,'ENTREGADO');
+INSERT  INTO  status  VALUES (1,'NUEVO'),(2,'CONFIRMADO'),(3,'PREPARANDO'),(4,'ENVIANDO'),(5,'ENTREGADO'),(6,'CANCELADO');
 
 DROP TABLE IF EXISTS  users ;
 
@@ -32,7 +32,7 @@ CREATE TABLE  users  (
    enable  BOOLEAN NOT NULL
 );
 
-INSERT  INTO  users  VALUES (1,'karibelbt','karibel barco','kbarco@gmail.com',5454545,'asdasd asdasd asdasd','hola',1,1),(2,'usuario','test','testo@gmail.com',5454545,'asdasd asdasd asdasd','hola',0,1);
+INSERT  INTO  users  VALUES (1,'admin','user admin','admin@gmail.com',5454545,'admin adress','admin',1,1),(2,'test','user test','test@gmail.com',5454545,'test address','test',0,1);
 
 DROP TABLE IF EXISTS  orders ;
 

@@ -1,8 +1,5 @@
 class Orders {
     create(sql,body,priceTotal,quantity,id_user){
-        console.log(body.id_fop)
-        console.log(priceTotal)
-        console.log(quantity)
         let resp = sql.query(
             `INSERT INTO orders (id_status,  quantity, id_fop, price, id_user) 
              VALUES (:id_status,  :quantity, :id_fop, :price, :id_user)`,
@@ -18,10 +15,22 @@ class Orders {
         return resp
 
     }
+    insertProductOrder(sql,id_order,id_product){
+        let resp = sql.query(
+            `INSERT INTO orders_products(id_order, id_product) 
+             VALUES (:id_order,  :id_product)`,
+            {
+                replacements: {
+                    id_order,
+                    id_product
+                }
+            });
+        return resp 
+    }
     list(sql, user) {
         if (user.admin == 1) {
             let resp = sql.query(
-                `SELECT DISTINCT o.id, o.create_time, o.price order_price, s.name status_name,
+                `SELECT DISTINCT o.id, o.create_time, o.price order_price, o.quantity, s.name status_name,
                     p.name product_name, p.price product_price, p.img_url, f.name payment, 
                     u.address, u.fullname, u.username, u.email, u.phone 
                 FROM orders o 
@@ -36,7 +45,7 @@ class Orders {
         } else {
             let id = user.id
             let resp = sql.query(
-                `SELECT DISTINCT o.id, o.create_time, o.price order_price, s.name status_name,
+                `SELECT DISTINCT o.id, o.create_time, o.price order_price, o.quantity, s.name status_name,
                     p.name product_name, p.price product_price, p.img_url, f.name payment, 
                     u.address, u.fullname, u.username, u.email, u.phone 
                 FROM orders o 
@@ -58,7 +67,7 @@ class Orders {
     get(sql, user, id){
         if (user.admin == 1) {
             let resp = sql.query(
-                `SELECT DISTINCT o.id, o.create_time, o.price order_price, s.name status_name,
+                `SELECT DISTINCT o.id, o.create_time, o.price order_price, o.quantity, s.name status_name,
                     p.name product_name, p.price product_price, p.img_url, f.name payment, 
                     u.address, u.fullname, u.username, u.email, u.phone 
                 FROM orders o 
@@ -78,7 +87,7 @@ class Orders {
         } else {
             let userId = user.id
             let resp = sql.query(
-                `SELECT DISTINCT o.id, o.create_time, o.price order_price, s.name status_name,
+                `SELECT DISTINCT o.id, o.create_time, o.price order_price, o.quantity, s.name status_name,
                     p.name product_name, p.price product_price, p.img_url, f.name payment, 
                     u.address, u.fullname, u.username, u.email, u.phone 
                 FROM orders o 
