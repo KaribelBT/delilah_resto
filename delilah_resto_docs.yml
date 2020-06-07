@@ -124,7 +124,7 @@ paths:
         404:
           $ref: "#/components/responses/NotFound"
         default:
-          $ref: "#/components/responses/Default"    
+          $ref: "#/components/responses/Default"
     put:
       tags:
         - Users
@@ -155,10 +155,10 @@ paths:
           $ref: "#/components/responses/BadRequest"
         401:
           $ref: "#/components/responses/Unauthorized"
-        404:        
+        404:
           $ref: "#/components/responses/NotFound"
         default:
-          $ref: "#/components/responses/Default"    
+          $ref: "#/components/responses/Default"
     delete:
       tags:
         - Users
@@ -173,7 +173,7 @@ paths:
             type: string
       responses:
         200:
-          description: Success, user disabled 
+          description: Success, user disabled
         400:
           $ref: "#/components/responses/BadRequest"
         401:
@@ -211,38 +211,38 @@ paths:
           $ref: "#/components/responses/Default"
   /products:
     post:
-        tags:
-          - Products
-        summary: Create new product (only user with admin attribute)
-        operationId: createProduct
-        requestBody:
-          description: Required input to create product
+      tags:
+        - Products
+      summary: Create new product (only user with admin attribute)
+      operationId: createProduct
+      requestBody:
+        description: Required input to create product
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductRequest"
+        required: true
+      responses:
+        201:
+          description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProductRequest"
-          required: true
-        responses:
-          201:
-            description: Success
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/ProductResponse"
-          400:
-            $ref: "#/components/responses/BadRequest"
-          401:
-            $ref: "#/components/responses/Unauthorized"
-          403:
-            $ref: "#/components/responses/Forbidden"
-          409:
-            $ref: "#/components/responses/Conflict"
-          default:
-            $ref: "#/components/responses/Default"
+                $ref: "#/components/schemas/ProductResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        403:
+          $ref: "#/components/responses/Forbidden"
+        409:
+          $ref: "#/components/responses/Conflict"
+        default:
+          $ref: "#/components/responses/Default"
     get:
       tags:
         - Products
-      summary: Gets a list of all the existing products 
+      summary: Gets a list of all the existing products
       operationId: listProducts
       responses:
         200:
@@ -279,6 +279,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         404:
           $ref: "#/components/responses/NotFound"
+        409:
+          $ref: "#/components/responses/Conflict"
         default:
           $ref: "#/components/responses/Default"
     put:
@@ -313,10 +315,10 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         403:
           $ref: "#/components/responses/Forbidden"
-        404:        
+        404:
           $ref: "#/components/responses/NotFound"
         default:
-          $ref: "#/components/responses/Default"    
+          $ref: "#/components/responses/Default"
     delete:
       tags:
         - Products
@@ -331,9 +333,9 @@ paths:
       operationId: deleteProduct
       responses:
         200:
-          description: Success, product disabled 
+          description: Success, product disabled
         400:
-            $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/BadRequest"
         401:
           $ref: "#/components/responses/Unauthorized"
         403:
@@ -344,30 +346,32 @@ paths:
           $ref: "#/components/responses/Default"
   /orders:
     post:
-        tags:
-          - Orders
-        summary: Creates a new order
-        operationId: createOrder
-        requestBody:
-          description: Required input to create order
+      tags:
+        - Orders
+      summary: Creates a new order
+      operationId: createOrder
+      requestBody:
+        description: Required input to create order
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequest"
+        required: true
+      responses:
+        201:
+          description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OrderRequest"
-          required: true
-        responses:
-          201:
-            description: Success
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/OrderResponse"
-          400:
-            $ref: "#/components/responses/BadRequest"
-          401:
-            $ref: "#/components/responses/Unauthorized"
-          default:
-            $ref: "#/components/responses/Default"
+                $ref: "#/components/schemas/OrderResponse"
+        400:
+          $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        409:
+          $ref: "#/components/responses/Conflict"
+        default:
+          $ref: "#/components/responses/Default"
     get:
       tags:
         - Orders
@@ -388,7 +392,7 @@ paths:
     get:
       tags:
         - Orders
-      summary: Get order by Id 
+      summary: Get order by Id
       parameters:
         - name: id
           in: path
@@ -423,15 +427,15 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Order modifiable status
+        description: Order modifiable status. 1 = NUEVO, 2 = CONFIRMADO, 3 = PREPARANDO, 4 = ENVIANDO, 5 = ENTREGADO
         content:
           application/json:
             schema:
               type: object
               properties:
                 status:
-                  type: string
-                  example: confirmado
+                  type: integer
+                  example: 1
         required: true
       responses:
         200:
@@ -449,7 +453,7 @@ paths:
         404:
           $ref: "#/components/responses/NotFound"
         default:
-          $ref: "#/components/responses/Default"    
+          $ref: "#/components/responses/Default"
     delete:
       tags:
         - Orders
@@ -464,9 +468,9 @@ paths:
       operationId: deleteOrder
       responses:
         200:
-          description: Success, order disabled 
+          description: Success, order disabled
         400:
-            $ref: "#/components/responses/BadRequest"
+          $ref: "#/components/responses/BadRequest"
         401:
           $ref: "#/components/responses/Unauthorized"
         403:
@@ -491,13 +495,13 @@ components:
           example: karibel.barco@gmail.com
         phone:
           type: integer
-          example: 5491144445555 
+          example: 5491144445555
         address:
           type: string
-          example: calle esperanza 123  
+          example: calle esperanza 123
         password:
           type: string
-          example: minumerodedocumento       
+          example: minumerodedocumento
     UserResponse:
       type: object
       properties:
@@ -516,19 +520,16 @@ components:
           example: karibel.barco@gmail.com
         phone:
           type: integer
-          example: 5491144445555 
+          example: 5491144445555
         address:
           type: string
-          example: calle esperanza 123  
-        password:
-          type: string
-          example: minumerodedocumento
+          example: calle esperanza 123
         admin:
-            type: boolean
-            example: false
+          type: boolean
+          example: false
         enable:
-            type: boolean
-            example: true    
+          type: boolean
+          example: true
     UsersList:
       type: array
       items:
@@ -543,8 +544,8 @@ components:
       type: object
       properties:
         username:
-            type: string
-            example: karibelbt
+          type: string
+          example: karibelbt
         email:
           type: string
           example: karibel.barco@gmail.com
@@ -588,9 +589,12 @@ components:
         img_url:
           type: string
           example: https://i.pinimg.com/236x/82/1b/0f/821b0ff74c7ee26c4882e954a6f2686e--bagel-sandwich-breakfast-sandwiches.jpg
+        stock:
+          type: number
+          example: 100
         enable:
-            type: boolean
-            example: true 
+          type: boolean
+          example: true
     ProductsList:
       type: array
       items:
@@ -598,50 +602,70 @@ components:
     OrderRequest:
       type: object
       properties:
-        quantity:
-          type: number
-          example: 2
-        products:
-          $ref: "#/components/schemas/ProductResponse"
+        product:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                example: 1
+              quantity:
+                type: number
+                example: 2
         fop:
-          type: string
-          example: tarjeta de crédito
-        price:
-          type: number
-          example: 850.00
-        id_user:      
           type: integer
-          format: int64
-          example: 1  
+          example: 1
     OrderResponse:
-      type: object
-      properties:
-        id:      
-          type: integer
-          format: int64
-          example: 1 
-        status:
-          type: string
-          example: nuevo
-        created_time:
-          type: string
-          format: date-time
-          example: "2020-05-24T12:48:05Z"
-        quantity:
-          type: number
-          example: 2
-        products:
-          $ref: "#/components/schemas/ProductResponse"
-        fop:
-          type: string
-          example: tarjeta de crédito
-        price:
-          type: number
-          example: 850.00
-        id_user:      
-          type: integer
-          format: int64
-          example: 1  
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int64
+            example: 1
+          created_time:
+            type: string
+            format: date-time
+            example: "2020-05-24T12:48:05Z"
+          order_price:
+            type: number
+            example: 850.00
+          quantity:
+            type: number
+            example: 2
+          status_name:
+            type: string
+            example: nuevo
+          product_name:
+            type: string
+            example: Bagel de salmón
+          product_price:
+            type: number
+            example: 425.00
+          img_url:
+            type: string
+            example: https://i.pinimg.com/236x/82/1b/0f/821b0ff74c7ee26c4882e954a6f2686e--bagel-sandwich-breakfast-sandwiches.jpg
+          payment:
+            type: string
+            example: Credito
+          address:
+            type: string
+            example: calle esperanza 123
+          full_name:
+            type: string
+            example: Karibel Barco
+          username:
+            type: string
+            example: karibelbt
+          email:
+            type: string
+            example: karibel.barco@gmail.com
+          phone:
+            type: integer
+            example: 5491144445555
     OrdersList:
       type: array
       items:
@@ -655,7 +679,7 @@ components:
       description: Unauthorized, you are not allowed here
     Forbidden:
       description: Forbidden, you are not an admin user
-    Conflict: 
+    Conflict:
       description: Conflict
     Default:
       description: Internal Server Error

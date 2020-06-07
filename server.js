@@ -237,7 +237,7 @@ server.post('/orders', myUser.validToken(jwt), async (req, res) => {
             let orderProm = req.body.product.map(async (p) => await myOrder.insertProductOrder(sequelize, orderId[0], p.id))
             await Promise.all(orderProm)
             let order = await myOrder.get(sequelize, req.user, orderId[0]);
-            res.status(200).json(order);
+            res.status(201).json(order);
         }else {
             res.status(409).json({ error: 'Conflict, invalid form of payment' });
         }
